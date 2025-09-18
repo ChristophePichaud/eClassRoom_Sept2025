@@ -1,0 +1,55 @@
+@startuml
+actor Admin
+participant "Blazor Client" as Client
+participant "SalleController" as Controller
+participant "AzureSalleDeFormationService" as SalleService
+participant "AzureInfrastructureService" as InfraService
+participant "EF DbContext" as Db
+participant "Azure ARM" as Azure
+
+== Création d'une salle de formation ==
+
+Admin -> Client : Demande création salle (nom, stagiaires, ...)
+Client -> Controller : POST /api/salles/provision (SalleDeFormationDto, params Azure)
+Controller -> SalleService : ProvisionnerSalleAsync(salle, adminUser, ...)
+
+SalleService -> InfraService : CreateResourceGroupAsync(rgName, location)
+InfraService -> Azure : Création Resource Group
+Azure --> InfraService : ResourceGroupResource
+InfraService --> SalleService : ResourceGroupResource
+
+SalleService -> InfraService : CreateVirtualNetworkAsync(rgName, vnetName, location, ...)
+InfraService -> Azure : Création VNet
+Azure --> InfraService : VirtualNetworkResource
+InfraService --> SalleService : VirtualNetworkResource
+
+SalleService -> InfraService : CreateSubnetAsync(rgName, vnetName, subnetName, ...)
+InfraService -> Azure : Création Subnet
+Azure --> InfraService : SubnetResource
+InfraService --> SalleService : SubnetResource
+
+loop Pour chaque stagiaire
+    SalleService -> InfraService : CreatePublicIpAsync(rgName, ipName, location)
+    InfraService -> Azure : Création IP Publique
+    Azure --> InfraService : PublicIPAddressResource
+    InfraService --> SalleService : PublicIPAddressResource
+
+    SalleService -> InfraService : CreateNetworkInterfaceAsync(rgName, nicName, location, subnetId, publicIpId)
+    InfraService -> Azure : Création NIC
+    Azure --> InfraService : NetworkInterfaceResource
+    InfraService --> SalleService : NetworkInterfaceResource
+
+    SalleService -> InfraService : CreateVirtualMachineAsync(rgName, vmName, location, adminUser, adminPassword, nicId)
+    InfraService -> Azure : Création VM
+    Azure --> InfraService : VirtualMachineResource
+    InfraService --> SalleService : VirtualMachineResource
+
+    SalleService -> Db : Ajout ProvisionningVM (salle, stagiaire, vm, ip)
+end
+
+SalleService -> Db : SaveChangesAsync()
+SalleService --> Controller : ProvisionningResultDto (Salle, [Stagiaire, IP])
+Controller --> Client : ProvisionningResultDto (Salle, [Stagiaire, IP])
+Client --> Admin : Affiche IPs aux stagiaires
+
+@enduml

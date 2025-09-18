@@ -150,3 +150,5 @@ Ja'i besoin de créer un Service Azure Métier de plus haut-niveau. Je veux le c
 
 La méthode ProvisionnerSalleAsync doit retourner un objet complexe qui contient la SalleDeFormationsDto et pour chaque stagiaire, la liste des adresses ip public ; ainsi on pourra donner aux stagiaires cette information pour qu'ils se connectent. Je veux stocker ces informations via le modèle Entity Framework dans une Table ProvisionningVM. Il faut donc que tu améliores le modèle EF et ajoute dans la couche service ces ajouts en bases de données. Tu saurais me coder cela et me le documenter en technique et en métier dans le folder 'Docs' ?
 
+Tu peux me recréer un diagramme de séquence au format PlantUML à partir de la doc et du code  des deux services ?
+
