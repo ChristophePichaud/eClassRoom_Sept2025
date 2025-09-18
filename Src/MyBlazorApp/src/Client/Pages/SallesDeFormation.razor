@@ -1,0 +1,67 @@
+@page "/salles"
+@inherits SallesDeFormationBase
+
+<h3>Gestion des salles de formation</h3>
+
+<button class="btn btn-primary mb-2" @onclick="ShowAddSalle">Nouvelle salle de formation</button>
+
+@if (isLoading)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Formateur</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var salle in salles)
+            {
+                <tr>
+                    <td>@salle.Nom</td>
+                    <td>@salle.Formateur</td>
+                    <td>@salle.DateDebut.ToShortDateString()</td>
+                    <td>@salle.DateFin.ToShortDateString()</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" @onclick="() => EditSalle(salle)">Modifier</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteSalle(salle.Id)">Supprimer</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (showForm)
+{
+    <EditForm Model="editSalle" OnValidSubmit="SaveSalle">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <h5>@(isEdit ? "Modifier la salle" : "Créer une nouvelle salle")</h5>
+        <div class="mb-2">
+            <label>Nom</label>
+            <InputText class="form-control" @bind-Value="editSalle.Nom" />
+        </div>
+        <div class="mb-2">
+            <label>Formateur</label>
+            <InputText class="form-control" @bind-Value="editSalle.Formateur" />
+        </div>
+        <div class="mb-2">
+            <label>Date début</label>
+            <InputDate class="form-control" @bind-Value="editSalle.DateDebut" />
+        </div>
+        <div class="mb-2">
+            <label>Date fin</label>
+            <InputDate class="form-control" @bind-Value="editSalle.DateFin" />
+        </div>
+        <button class="btn btn-success me-2" type="submit">Enregistrer</button>
+        <button class="btn btn-secondary" type="button" @onclick="CancelEdit">Annuler</button>
+    </EditForm>
+}

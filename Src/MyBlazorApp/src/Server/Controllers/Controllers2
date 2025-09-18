@@ -1,0 +1,64 @@
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MyBlazorApp.Server.Models;
+using MyBlazorApp.Server.Services;
+
+namespace MyBlazorApp.Server.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ExampleController : ControllerBase
+    {
+        private readonly IExampleService _exampleService;
+
+        public ExampleController(IExampleService exampleService)
+        {
+            _exampleService = exampleService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ExampleModel>>> GetExamples()
+        {
+            var examples = await _exampleService.GetAllExamplesAsync();
+            return Ok(examples);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ExampleModel>> GetExample(int id)
+        {
+            var example = await _exampleService.GetExampleByIdAsync(id);
+            if (example == null)
+            {
+                return NotFound();
+            }
+            return Ok(example);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ExampleModel>> CreateExample(ExampleModel exampleModel)
+        {
+            var createdExample = await _exampleService.CreateExampleAsync(exampleModel);
+            return CreatedAtAction(nameof(GetExample), new { id = createdExample.Id }, createdExample);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateExample(int id, ExampleModel exampleModel)
+        {
+            if (id != exampleModel.Id)
+            {
+                return BadRequest();
+            }
+
+            await _exampleService.UpdateExampleAsync(exampleModel);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteExample(int id)
+        {
+            await _exampleService.DeleteExampleAsync(id);
+            return NoContent();
+        }
+    }
+}

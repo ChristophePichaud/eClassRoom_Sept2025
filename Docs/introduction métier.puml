@@ -1,0 +1,28 @@
+@startuml
+actor Client
+participant "Portail Web" as Web
+participant "Backend eClassRoom" as Backend
+participant "Azure" as Azure
+participant "Portail RDP" as RDP
+
+Client -> Web : Se connecte (email)
+Client -> Web : Renseigne formateur et stagiaires
+Client -> Web : Sélectionne type VM, modèle, OS, ISO
+Client -> Web : Clique sur "Provisionner"
+
+Web -> Backend : Demande de création de salle (infos saisies)
+Backend -> Azure : Provisionne les VMs (pour chaque stagiaire)
+Azure --> Backend : Retour IDs et accès VMs
+
+Backend -> RDP : Génère fichiers RDP pour chaque stagiaire
+RDP --> Backend : Confirmation fichiers disponibles
+
+Backend -> Web : Notifie que la salle est prête
+
+Client -> Web : Accède à la salle
+Web -> RDP : Affiche liens de téléchargement fichiers RDP
+
+Client -> RDP : Télécharge fichier RDP
+Client -> Azure : Se connecte à sa VM via RDP
+
+@enduml

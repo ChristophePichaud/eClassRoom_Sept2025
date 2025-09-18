@@ -1,0 +1,81 @@
+@page "/utilisateurs"
+@inherits UtilisateursBase
+
+<h3>Gestion des utilisateurs</h3>
+
+<button class="btn btn-primary mb-2" @onclick="ShowAddUtilisateur">Nouvel utilisateur</button>
+
+@if (isLoading)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Rôle</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in utilisateurs)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>@user.Nom</td>
+                    <td>@user.Prenom</td>
+                    <td>@user.Role</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" @onclick="() => EditUtilisateur(user)">Modifier</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteUtilisateur(user.Id)">Supprimer</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (showForm)
+{
+    <EditForm Model="editUtilisateur" OnValidSubmit="SaveUtilisateur">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <h5>@(isEdit ? "Modifier l'utilisateur" : "Créer un nouvel utilisateur")</h5>
+        <div class="mb-2">
+            <label>Email</label>
+            <InputText class="form-control" @bind-Value="editUtilisateur.Email" />
+        </div>
+        <div class="mb-2">
+            <label>Nom</label>
+            <InputText class="form-control" @bind-Value="editUtilisateur.Nom" />
+        </div>
+        <div class="mb-2">
+            <label>Prénom</label>
+            <InputText class="form-control" @bind-Value="editUtilisateur.Prenom" />
+        </div>
+        <div class="mb-2">
+            <label>Client</label>
+            <InputSelect class="form-control" @bind-Value="editUtilisateur.ClientId">
+                <option value="">-- Sélectionner une société --</option>
+                @foreach (var client in clients)
+                {
+                    <option value="@client.Id">@client.NomSociete</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="mb-2">
+            <label>Mot de passe</label>
+            <InputText class="form-control" @bind-Value="editUtilisateur.MotDePasse" type="password" />
+        </div>
+        <div class="mb-2">
+            <label>Rôle</label>
+            <InputText class="form-control" @bind-Value="editUtilisateur.Role" />
+        </div>
+        <button class="btn btn-success me-2" type="submit">Enregistrer</button>
+        <button class="btn btn-secondary" type="button" @onclick="CancelEdit">Annuler</button>
+    </EditForm>
+}

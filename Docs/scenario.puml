@@ -1,0 +1,31 @@
+@startuml
+actor AdminClient
+participant "Backend eClassRoom" as Backend
+participant "Azure Resource Manager" as ARM
+participant "Azure Monitor" as Monitor
+participant "VM Stagiaire" as VM
+participant "Billing Engine" as Billing
+
+== Création de la session ==
+AdminClient -> Backend : Crée une session de formation
+Backend -> ARM : Provisionne Resource Group (client)
+Backend -> ARM : Provisionne N VM (1 par stagiaire)
+ARM -> VM : Crée VM avec image customisée
+ARM -> VM : Applique tags (Client, SessionId, Dates, etc.)
+
+== Planification ==
+Backend -> ARM : Planifie démarrage à StartDate
+Backend -> ARM : Planifie arrêt à EndDate
+
+== Supervision ==
+VM -> Monitor : Envoie métriques d’usage
+Monitor -> Backend : Log activité (Start/Stop, CPU, etc.)
+Backend -> Billing : Calcule durée d’usage
+
+== Facturation ==
+Billing -> Backend : Applique surfacturation (×2)
+Backend -> AdminClient : Affiche coût final
+
+== Fin de session ==
+ARM -> VM : Arrêt ou suppression à EndDate
+@enduml

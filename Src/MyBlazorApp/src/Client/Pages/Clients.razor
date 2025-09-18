@@ -1,0 +1,65 @@
+@page "/clients"
+@inherits ClientsBase
+
+<h3>Gestion des clients</h3>
+
+<button class="btn btn-primary mb-2" @onclick="ShowAddClient">Nouveau client</button>
+
+@if (isLoading)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Adresse</th>
+                <th>Email admin</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var client in clients)
+            {
+                <tr>
+                    <td>@client.NomSociete</td>
+                    <td>@client.Adresse</td>
+                    <td>@client.EmailAdministrateur</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" @onclick="() => EditClient(client)">Modifier</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteClient(client.Id)">Supprimer</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (showForm)
+{
+    <EditForm Model="editClient" OnValidSubmit="SaveClient">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <h5>@(isEdit ? "Modifier le client" : "Créer un nouveau client")</h5>
+        <div class="mb-2">
+            <label>Nom société</label>
+            <InputText class="form-control" @bind-Value="editClient.NomSociete" />
+        </div>
+        <div class="mb-2">
+            <label>Adresse</label>
+            <InputText class="form-control" @bind-Value="editClient.Adresse" />
+        </div>
+        <div class="mb-2">
+            <label>Email administrateur</label>
+            <InputText class="form-control" @bind-Value="editClient.EmailAdministrateur" />
+        </div>
+        <div class="mb-2">
+            <label>Mot de passe administrateur</label>
+            <InputText class="form-control" @bind-Value="editClient.MotDePasseAdministrateur" type="password" />
+        </div>
+        <button class="btn btn-success me-2" type="submit">Enregistrer</button>
+        <button class="btn btn-secondary" type="button" @onclick="CancelEdit">Annuler</button>
+    </EditForm>
+}

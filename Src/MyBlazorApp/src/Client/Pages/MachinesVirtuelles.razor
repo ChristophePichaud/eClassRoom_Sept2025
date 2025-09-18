@@ -1,0 +1,91 @@
+@page "/machines"
+@inherits MachinesVirtuellesBase
+
+<h3>Gestion des machines virtuelles</h3>
+
+<button class="btn btn-primary mb-2" @onclick="ShowAddVm">Nouvelle machine virtuelle</button>
+
+@if (isLoading)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Type OS</th>
+                <th>Type VM</th>
+                <th>SKU</th>
+                <th>Offer</th>
+                <th>Version</th>
+                <th>Disk ISO</th>
+                <th>Nom marketing</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vm in machines)
+            {
+                <tr>
+                    <td>@vm.Nom</td>
+                    <td>@vm.TypeOs</td>
+                    <td>@vm.TypeVm</td>
+                    <td>@vm.Sku</td>
+                    <td>@vm.Offer</td>
+                    <td>@vm.Version</td>
+                    <td>@vm.DiskIso</td>
+                    <td>@vm.NomMarketing</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" @onclick="() => EditVm(vm)">Modifier</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteVm(vm.Id)">Supprimer</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (showForm)
+{
+    <EditForm Model="editVm" OnValidSubmit="SaveVm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <h5>@(isEdit ? "Modifier la machine virtuelle" : "Créer une nouvelle machine virtuelle")</h5>
+        <div class="mb-2">
+            <label>Nom</label>
+            <InputText class="form-control" @bind-Value="editVm.Nom" />
+        </div>
+        <div class="mb-2">
+            <label>Type OS</label>
+            <InputText class="form-control" @bind-Value="editVm.TypeOs" />
+        </div>
+        <div class="mb-2">
+            <label>Type VM</label>
+            <InputText class="form-control" @bind-Value="editVm.TypeVm" />
+        </div>
+        <div class="mb-2">
+            <label>SKU</label>
+            <InputText class="form-control" @bind-Value="editVm.Sku" />
+        </div>
+        <div class="mb-2">
+            <label>Offer</label>
+            <InputText class="form-control" @bind-Value="editVm.Offer" />
+        </div>
+        <div class="mb-2">
+            <label>Version</label>
+            <InputText class="form-control" @bind-Value="editVm.Version" />
+        </div>
+        <div class="mb-2">
+            <label>Disk ISO</label>
+            <InputText class="form-control" @bind-Value="editVm.DiskIso" />
+        </div>
+        <div class="mb-2">
+            <label>Nom marketing</label>
+            <InputText class="form-control" @bind-Value="editVm.NomMarketing" />
+        </div>
+        <button class="btn btn-success me-2" type="submit">Enregistrer</button>
+        <button class="btn btn-secondary" type="button" @onclick="CancelEdit">Annuler</button>
+    </EditForm>
+}
